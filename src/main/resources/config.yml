@@ -1,0 +1,16 @@
+##############################
+# Powered Mobs Configuration #
+##############################
+# Potion Effects: https://jd.papermc.io/paper/1.19/org/bukkit/potion/PotionEffectType.html
+#####
+
+skeleton:
+  # Percent Chance for the arrow to change.
+  # 40% Chance -> 40
+  special-arrow-chance: 0
+  # Special Arrow Type Format: PotionEffect durationInTicks amplifierLevel
+  # Poison I (0:15) -> POISON 300 0
+  special-arrow-types:
+    - CONFUSION 100 4
+    - HUNGER 300 0
+    - POISON 300 0
