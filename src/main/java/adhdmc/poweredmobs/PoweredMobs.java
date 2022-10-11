@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class PoweredMobs extends JavaPlugin {
 
-    public static Plugin plugin;
+    private static Plugin plugin;
 
     @Override
     public void onEnable() {
