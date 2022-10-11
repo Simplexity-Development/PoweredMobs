@@ -1,11 +1,12 @@
 package adhdmc.poweredmobs.listener.zombie;
 
 import adhdmc.poweredmobs.PoweredMobs;
-import net.kyori.adventure.text.Component;
+import adhdmc.poweredmobs.config.ConfigSetting;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,6 +26,9 @@ public class ZombieDeathListener implements Listener {
     public void onZombieDeath(EntityDeathEvent event) {
         // Zombie Types: Zombie, Drowned, Husk, PigZombie, VillagerZombie
         if (!(event.getEntity() instanceof Zombie)) return;
+        FileConfiguration config = PoweredMobs.getPlugin().getConfig();
+        if (!config.getBoolean(ConfigSetting.ZOMBIE_RESURRECT_ENABLED.path, false)) return;
+
         // TODO: Check excluded Zombie Types
         PersistentDataContainer mobPDC = event.getEntity().getPersistentDataContainer();
         if (mobPDC.has(hasResurrected)) return;
@@ -36,8 +40,13 @@ public class ZombieDeathListener implements Listener {
         zombie.setGravity(false);
         Bukkit.getScheduler().runTaskLater(PoweredMobs.getPlugin(), () -> {
 
-            // TODO: Make resurrect chance configurable.
             if (zombie.isDead()) return;
+            int chance = config.getInt(ConfigSetting.ZOMBIE_RESURRECT_CHANCE.path);
+            if ((int)(Math.random() * 100 + 1) > chance) {
+                killZombie(zombie);
+                return;
+            }
+            
             zombie.setAI(true);
             zombie.setInvulnerable(false);
             zombie.setGravity(true);
@@ -47,18 +56,22 @@ public class ZombieDeathListener implements Listener {
             mobPDC.set(hasResurrected, PersistentDataType.BYTE, (byte) 0);
             zombiesOnResurrect.remove(zombie);
 
-        }, 20*10);
-        // TODO: ^ Make time configurable.
+        }, config.getInt(ConfigSetting.ZOMBIE_RESURRECT_DURATION.path, 200));
     }
 
     public static void stopZombieResurrects() {
         for (Zombie zombie : zombiesOnResurrect) {
-            zombie.setInvulnerable(false);
-            AttributeInstance health = zombie.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-            assert health != null;
-            zombie.damage(health.getValue());
+            killZombie(zombie);
         }
         zombiesOnResurrect.clear();
+    }
+
+    private static void killZombie(Zombie zombie) {
+        if (zombie.isDead()) return;
+        zombie.setInvulnerable(false);
+        AttributeInstance health = zombie.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        assert health != null;
+        zombie.damage(health.getValue());
     }
 
 }

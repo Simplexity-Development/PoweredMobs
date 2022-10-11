@@ -7,13 +7,17 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.logging.Logger;
+
 public final class PoweredMobs extends JavaPlugin {
 
     private static Plugin plugin;
+    private static Logger logger;
 
     @Override
     public void onEnable() {
         plugin = this;
+        logger = PoweredMobs.getPlugin().getLogger();
         Config.loadConfig();
         registerEvents();
     }
@@ -32,6 +36,10 @@ public final class PoweredMobs extends JavaPlugin {
 
     public static void broadcast(String message) {
         PoweredMobs.getPlugin().getServer().broadcast(MiniMessage.miniMessage().deserialize(message));
+    }
+
+    public static void debug(String message) {
+        logger.info(message);
     }
 
 }

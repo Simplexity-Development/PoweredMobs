@@ -3,10 +3,12 @@
 ##############################
 # Potion Effects: https://jd.papermc.io/paper/1.19/org/bukkit/potion/PotionEffectType.html
 #####
+# Percent Chance Settings:      40% Chance -> 40
+# Duration Settings:            20 Ticks Per Second, 10s -> 200
+#####
 
 skeleton:
   # Percent Chance for the arrow to change.
-  # 40% Chance -> 40
   special-arrow-chance: 0
   # Special Arrow Type Format: PotionEffect durationInTicks amplifierLevel
   # Poison I (0:15) -> POISON 300 0
@@ -14,3 +16,12 @@ skeleton:
     - CONFUSION 100 4
     - HUNGER 300 0
     - POISON 300 0
+
+zombie:
+  resurrect:
+    # Enable resurrection and zombie death animation.
+    enabled: false
+    # Chance for zombie to successfully revive.
+    chance: 0
+    # Duration in ticks after death until resurrection chance.
+    duration: 200
