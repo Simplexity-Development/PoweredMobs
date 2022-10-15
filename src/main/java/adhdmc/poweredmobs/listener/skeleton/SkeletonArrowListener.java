@@ -35,7 +35,6 @@ public class SkeletonArrowListener implements Listener {
         if (type == null) return;
         int duration = (arrowProperties.length >= 2) ? Integer.parseInt(arrowProperties[1]) : 0;
         int amplifier = (arrowProperties.length >= 3) ? Integer.parseInt(arrowProperties[2]) : 0;
-        PoweredMobs.broadcast(type.getName() + " " + duration + " " + amplifier);
 
         Arrow arrow = (Arrow) event.getProjectile();
         arrow.addCustomEffect(type.createEffect(duration, amplifier), false);
