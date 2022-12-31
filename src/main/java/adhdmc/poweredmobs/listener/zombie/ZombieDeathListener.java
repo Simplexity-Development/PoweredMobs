@@ -3,6 +3,8 @@ package adhdmc.poweredmobs.listener.zombie;
 import adhdmc.poweredmobs.PoweredMobs;
 import adhdmc.poweredmobs.config.ConfigSetting;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -32,12 +34,19 @@ public class ZombieDeathListener implements Listener {
         // TODO: Check excluded Zombie Types
         PersistentDataContainer mobPDC = event.getEntity().getPersistentDataContainer();
         if (mobPDC.has(hasResurrected)) return;
-        event.setCancelled(true);
         Zombie zombie = (Zombie) event.getEntity();
+        Location grave = findValidBlockPosition(zombie.getLocation());
+        if (grave == null) return;
+        event.setCancelled(true);
         zombiesOnResurrect.add(zombie);
         zombie.setAI(false);
         zombie.setInvulnerable(true);
         zombie.setGravity(false);
+        zombie.setInvisible(true);
+        zombie.teleport(grave);
+
+        grave.getBlock().setType(Material.ZOMBIE_HEAD);
+
         Bukkit.getScheduler().runTaskLater(PoweredMobs.getPlugin(), () -> {
 
             if (zombie.isDead()) return;
@@ -46,13 +55,14 @@ public class ZombieDeathListener implements Listener {
                 killZombie(zombie);
                 return;
             }
-            
-            zombie.setAI(true);
-            zombie.setInvulnerable(false);
-            zombie.setGravity(true);
+
             AttributeInstance health = zombie.getAttribute(Attribute.GENERIC_MAX_HEALTH);
             assert health != null;
             zombie.setHealth(health.getValue());
+            zombie.setAI(true);
+            zombie.setInvulnerable(false);
+            zombie.setGravity(true);
+            zombie.setInvisible(false);
             mobPDC.set(hasResurrected, PersistentDataType.BYTE, (byte) 0);
             zombiesOnResurrect.remove(zombie);
 
@@ -72,6 +82,18 @@ public class ZombieDeathListener implements Listener {
         AttributeInstance health = zombie.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         assert health != null;
         zombie.damage(health.getValue());
+    }
+
+    private static Location findValidBlockPosition(Location loc) {
+        if (loc.getBlock().isEmpty()) return loc.toBlockLocation();
+        for (int y = 0; y < 4; y++) {
+            for (int x = 1; x < 4; x++) {
+                for (int z = 1; z < 4; z++) {
+                    // TODO: Find Valid Position
+                }
+            }
+        }
+        return null;
     }
 
 }

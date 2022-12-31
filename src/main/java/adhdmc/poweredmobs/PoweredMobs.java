@@ -24,7 +24,7 @@ public final class PoweredMobs extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        ZombieDeathListener.stopZombieResurrects();
     }
 
     public static Plugin getPlugin() { return plugin; }
